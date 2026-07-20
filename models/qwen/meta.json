@@ -1,0 +1,13 @@
+{
+  "model": "qwen",
+  "provider": "通义千问 Qwen",
+  "prompt_version": "v1",
+  "generated_at": "2026-07-20",
+  "generation_method": "single-turn",
+  "notes": "ES Modules 多文件结构，Canvas 2D 渲染，含鼠标控制、5 波次循环、道具系统、Web Audio 合成音效",
+  "scores": {
+    "playability": null,
+    "visual": null,
+    "code_quality": null
+  }
+}
