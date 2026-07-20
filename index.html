@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雷电 RAIDEN</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #05060e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #8fa3c8;
+    overflow: hidden;
+  }
+  canvas {
+    background: #000;
+    border: 1px solid #1c2a4a;
+    border-radius: 6px;
+    box-shadow: 0 0 40px rgba(40, 90, 200, 0.25);
+    max-height: 92vh;
+    max-width: 96vw;
+  }
+  .hint {
+    margin-top: 10px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+  <canvas id="game" width="480" height="720"></canvas>
+  <div class="hint">方向键 / WASD 移动 · 自动开火 · X 炸弹 · P 暂停 · M 静音 · Enter 开始</div>
+  <script src="game.js"></script>
+</body>
+</html>
