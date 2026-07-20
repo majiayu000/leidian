@@ -3,39 +3,330 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>雷电 RAIDEN</title>
+<title>雷电 · 多模型对比</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #05060e;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-    color: #8fa3c8;
-    overflow: hidden;
-  }
-  canvas {
-    background: #000;
-    border: 1px solid #1c2a4a;
-    border-radius: 6px;
-    box-shadow: 0 0 40px rgba(40, 90, 200, 0.25);
-    max-height: 92vh;
-    max-width: 96vw;
-  }
-  .hint {
-    margin-top: 10px;
-    font-size: 13px;
-    letter-spacing: 1px;
-    opacity: 0.7;
-  }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0b14;
+  color: #c8d6e5;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  min-height: 100vh;
+}
+header {
+  text-align: center;
+  padding: 28px 16px 12px;
+  border-bottom: 1px solid #1a2035;
+}
+header h1 {
+  font-size: 28px;
+  color: #00e5c0;
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(0, 229, 192, 0.4);
+}
+header p { font-size: 13px; color: #5a6a80; margin-top: 6px; }
+
+.layout {
+  display: flex;
+  height: calc(100vh - 100px);
+}
+
+/* 侧边栏 */
+.sidebar {
+  width: 240px;
+  border-right: 1px solid #1a2035;
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.sidebar h2 {
+  font-size: 13px;
+  color: #5a6a80;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.model-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.model-item:hover { background: #141b2d; }
+.model-item.active { background: #1a2540; border-left: 3px solid #00e5c0; }
+.model-item .name { font-size: 14px; }
+.model-item .tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #1e2a45;
+  color: #7a8fa8;
+}
+
+/* 主区域 */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  min-width: 0;
+}
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.toolbar button {
+  padding: 6px 14px;
+  font-size: 13px;
+  background: #141b2d;
+  color: #8fa3c8;
+  border: 1px solid #253050;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toolbar button:hover { border-color: #00e5c0; color: #00e5c0; }
+.toolbar button.active { background: #00e5c0; color: #0a0b14; border-color: #00e5c0; }
+
+.game-area {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  min-height: 0;
+}
+.game-frame {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.game-frame .frame-header {
+  font-size: 12px;
+  color: #5a6a80;
+  padding: 4px 8px;
+  background: #111827;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #1a2035;
+  border-bottom: none;
+}
+.game-frame iframe {
+  flex: 1;
+  border: 1px solid #1a2035;
+  border-radius: 0 0 4px 4px;
+  background: #000;
+}
+.game-frame.hidden { display: none; }
+
+/* 评分面板 */
+.score-panel {
+  width: 280px;
+  border-left: 1px solid #1a2035;
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.score-panel h2 {
+  font-size: 13px;
+  color: #5a6a80;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.score-card {
+  background: #111827;
+  border: 1px solid #1a2035;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.score-card .model-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e8f0;
+  margin-bottom: 10px;
+}
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.score-row .label { color: #7a8fa8; }
+.score-row .value { color: #00e5c0; font-weight: 600; }
+.score-row .value.na { color: #3a4a60; }
+.score-total {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #1a2035;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+}
+.score-total .value { color: #ffcc00; }
+
+@media (max-width: 900px) {
+  .layout { flex-direction: column; height: auto; }
+  .sidebar { width: 100%; display: flex; gap: 4px; overflow-x: auto; border-right: none; border-bottom: 1px solid #1a2035; }
+  .sidebar h2 { display: none; }
+  .score-panel { width: 100%; border-left: none; border-top: 1px solid #1a2035; }
+  .game-area { min-height: 500px; }
+}
 </style>
 </head>
 <body>
-  <canvas id="game" width="480" height="720"></canvas>
-  <div class="hint">方向键 / WASD 移动 · 自动开火 · X 炸弹 · P 暂停 · M 静音 · Enter 开始</div>
-  <script src="game.js"></script>
+<header>
+  <h1>雷 电</h1>
+  <p>多模型生成对比 · 同一 Prompt，不同模型，谁做得更好？</p>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <h2>模型列表</h2>
+  </nav>
+
+  <main class="main">
+    <div class="toolbar">
+      <button id="btn-single" class="active">单屏预览</button>
+      <button id="btn-compare">并排对比</button>
+    </div>
+    <div class="game-area" id="game-area">
+      <div class="game-frame" id="frame-a">
+        <div class="frame-header" id="header-a">选择一个模型</div>
+        <iframe id="iframe-a" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+      <div class="game-frame hidden" id="frame-b">
+        <div class="frame-header" id="header-b">对比模型</div>
+        <iframe id="iframe-b" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <aside class="score-panel" id="score-panel">
+    <h2>评分面板</h2>
+  </aside>
+</div>
+
+<script>
+// 模型注册表 — 新增模型只需在此追加
+const MODELS = [
+  { id: 'kimi-k3', name: 'Kimi K3', provider: '月之暗面' },
+  // { id: 'qwen', name: 'Qwen 2.5 Coder', provider: '通义千问' },
+  // { id: 'claude', name: 'Claude Sonnet', provider: 'Anthropic' },
+  // { id: 'gpt', name: 'GPT-4o', provider: 'OpenAI' },
+  // { id: 'gemini', name: 'Gemini Pro', provider: 'Google' },
+];
+
+let currentA = null;
+let currentB = null;
+let compareMode = false;
+let scores = {};
+
+// 加载评分
+async function loadScores() {
+  for (const m of MODELS) {
+    try {
+      const res = await fetch(`models/${m.id}/meta.json`);
+      const meta = await res.json();
+      scores[m.id] = meta.scores || {};
+    } catch { scores[m.id] = {}; }
+  }
+}
+
+// 渲染侧边栏
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  MODELS.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'model-item';
+    div.dataset.id = m.id;
+    div.innerHTML = `<span class="name">${m.name}</span><span class="tag">${m.provider}</span>`;
+    div.addEventListener('click', () => selectModel(m.id));
+    sidebar.appendChild(div);
+  });
+}
+
+// 选择模型
+function selectModel(id) {
+  if (!compareMode) {
+    currentA = id;
+    document.getElementById('iframe-a').src = `models/${id}/index.html`;
+    document.getElementById('header-a').textContent = MODELS.find(m => m.id === id).name;
+  } else {
+    if (!currentA) {
+      currentA = id;
+      document.getElementById('iframe-a').src = `models/${id}/index.html`;
+      document.getElementById('header-a').textContent = MODELS.find(m => m.id === id).name;
+    } else if (id !== currentA) {
+      currentB = id;
+      document.getElementById('iframe-b').src = `models/${id}/index.html`;
+      document.getElementById('header-b').textContent = MODELS.find(m => m.id === id).name;
+    }
+  }
+  // 高亮
+  document.querySelectorAll('.model-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === currentA || el.dataset.id === currentB);
+  });
+  renderScores();
+}
+
+// 模式切换
+document.getElementById('btn-single').addEventListener('click', () => {
+  compareMode = false;
+  currentB = null;
+  document.getElementById('btn-single').classList.add('active');
+  document.getElementById('btn-compare').classList.remove('active');
+  document.getElementById('frame-b').classList.add('hidden');
+});
+document.getElementById('btn-compare').addEventListener('click', () => {
+  compareMode = true;
+  document.getElementById('btn-compare').classList.add('active');
+  document.getElementById('btn-single').classList.remove('active');
+  document.getElementById('frame-b').classList.remove('hidden');
+});
+
+// 渲染评分
+function renderScores() {
+  const panel = document.getElementById('score-panel');
+  const dims = [
+    { key: 'playability', label: '可玩性 (40%)' },
+    { key: 'visual', label: '视觉 (30%)' },
+    { key: 'code_quality', label: '代码 (30%)' },
+  ];
+  let html = '<h2>评分面板</h2>';
+  const show = compareMode ? [currentA, currentB].filter(Boolean) : (currentA ? [currentA] : []);
+
+  if (show.length === 0) {
+    html += '<p style="color:#3a4a60;font-size:13px">选择模型查看评分</p>';
+  }
+
+  for (const id of show) {
+    const m = MODELS.find(x => x.id === id);
+    const s = scores[id] || {};
+    const total = (s.playability || 0) * 0.4 + (s.visual || 0) * 0.3 + (s.code_quality || 0) * 0.3;
+    html += `<div class="score-card"><div class="model-name">${m.name}</div>`;
+    for (const d of dims) {
+      const v = s[d.key];
+      html += `<div class="score-row"><span class="label">${d.label}</span><span class="value ${v == null ? 'na' : ''}">${v != null ? v + ' / 10' : '待评'}</span></div>`;
+    }
+    html += `<div class="score-total"><span>综合</span><span class="value">${total > 0 ? total.toFixed(1) : '—'}</span></div>`;
+    html += '</div>';
+  }
+  panel.innerHTML = html;
+}
+
+// 初始化
+loadScores().then(() => {
+  renderSidebar();
+  renderScores();
+  if (MODELS.length > 0) selectModel(MODELS[0].id);
+});
+</script>
 </body>
 </html>

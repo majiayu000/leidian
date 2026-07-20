@@ -1,0 +1,13 @@
+{
+  "model": "kimi-k3",
+  "provider": "月之暗面 Kimi",
+  "prompt_version": "v1",
+  "generated_at": "2026-07-20",
+  "generation_method": "single-turn",
+  "notes": "单文件实现，IIFE 封装，含暂停/静音/最高分/屏幕震动/Boss 预警",
+  "scores": {
+    "playability": null,
+    "visual": null,
+    "code_quality": null
+  }
+}
