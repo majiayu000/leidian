@@ -1,0 +1,13 @@
+{
+  "model": "Codex",
+  "provider": "OpenAI",
+  "prompt_version": "v1",
+  "generated_at": "2026-07-21",
+  "generation_method": "iterative",
+  "notes": "零依赖 Canvas 纵版射击游戏，支持键盘、触屏、敌机波次、Boss、道具与本地最高分。",
+  "scores": {
+    "playability": null,
+    "visual": null,
+    "code_quality": null
+  }
+}
