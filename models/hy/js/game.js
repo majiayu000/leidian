@@ -81,6 +81,7 @@ const Game = {
     for (let i = 0; i < 3; i++) {
       this.powerups.push(new PowerUp(Utils.rand(80, this.W - 80), 120 + i * 40, Utils.choice(['weapon', 'bomb', 'shield', 'life'])));
     }
+    this.enemyBullets.forEach(b => b.dead = true);
     this.boss = null;
     this.banner = this.level >= this.MAX_LEVEL ? '胜利！' : '关卡清空';
     this.transition = 2.2;

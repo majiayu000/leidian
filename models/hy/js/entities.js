@@ -136,8 +136,8 @@ class Player {
     this.invuln = Math.max(this.invuln, 1.5);
     Audio.bomb();
     Game.enemyBullets.forEach(b => b.dead = true);
-    Game.enemies.forEach(e => { e.hp -= 6; if (e.flash !== undefined) e.flash = 0.1; });
-    if (Game.boss) Game.boss.hp -= 40;
+    Game.enemies.forEach(e => e.hit(6));
+    if (Game.boss) Game.boss.hit(40);
     Game.addExplosion(this.x, this.y, 220, '#b06bff', 60);
     Game.screenShake = 0.6;
   }
