@@ -1,0 +1,13 @@
+{
+  "model": "hy",
+  "provider": "Tencent",
+  "prompt_version": "v1",
+  "generated_at": "2026-08-05",
+  "generation_method": "iterative",
+  "notes": "零依赖 Canvas 2D 纵版射击游戏。键盘/WASD 移动、长按连射、5 级武器、炸弹清屏+无敌、护盾与生命道具、5 关程序化波次、三阶段 Boss、粒子爆炸、屏幕震动、Web Audio 合成音效、本地最高分。",
+  "scores": {
+    "playability": null,
+    "visual": null,
+    "code_quality": null
+  }
+}
