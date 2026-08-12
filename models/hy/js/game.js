@@ -8,7 +8,7 @@ const Game = {
   bullets: [], enemyBullets: [], enemies: [], particles: [], powerups: [],
   stars: [],
   score: 0, highScore: 0, level: 1, time: 0, screenShake: 0,
-  bossSpawned: false, transition: 0, banner: '',
+  bossSpawned: false, transition: 0, banner: '', runId: 0,
 
   init(canvas) {
     this.canvas = canvas;
@@ -64,7 +64,7 @@ const Game = {
   },
   _maybeDrop(x, y, type) {
     let r = Math.random();
-    if (type === 'tank') r = Math.random() * 0.6; // 坦克必掉之一
+    if (type === 'tank') r *= 0.34; // 坦克必掉之一
     if (r < 0.10) this.powerups.push(new PowerUp(x, y, 'weapon'));
     else if (r < 0.16) this.powerups.push(new PowerUp(x, y, 'bomb'));
     else if (r < 0.20) this.powerups.push(new PowerUp(x, y, 'shield'));
@@ -75,33 +75,42 @@ const Game = {
     Audio.bossExplosion();
     this.score += 5000 + this.level * 1000;
     this.screenShake = 0.8;
+    const runId = this.runId;
     for (let i = 0; i < 5; i++) {
-      setTimeout(() => this.addExplosion(b.x + Utils.rand(-40, 40), b.y + Utils.rand(-30, 30), 160, Utils.choice(['#ff5b6e', '#ffd23f', '#ff5bff']), 30), i * 90);
+      setTimeout(() => {
+        if (this.runId !== runId) return;
+        this.addExplosion(b.x + Utils.rand(-40, 40), b.y + Utils.rand(-30, 30), 160, Utils.choice(['#ff5b6e', '#ffd23f', '#ff5bff']), 30);
+      }, i * 90);
     }
     for (let i = 0; i < 3; i++) {
       this.powerups.push(new PowerUp(Utils.rand(80, this.W - 80), 120 + i * 40, Utils.choice(['weapon', 'bomb', 'shield', 'life'])));
     }
     this.enemyBullets.forEach(b => b.dead = true);
     this.boss = null;
-    this.banner = this.level >= this.MAX_LEVEL ? '胜利！' : '关卡清空';
+    const isVictory = this.level >= this.MAX_LEVEL;
+    if (isVictory) this._saveHighScore();
+    this.banner = isVictory ? '胜利！' : '关卡清空';
     this.transition = 2.2;
-    this.state = this.level >= this.MAX_LEVEL ? 'victory' : 'levelclear';
+    this.state = isVictory ? 'victory' : 'levelclear';
     if (this.state === 'levelclear') Audio.levelClear();
+  },
+  _saveHighScore() {
+    if (this.score <= this.highScore) return;
+    this.highScore = this.score;
+    localStorage.setItem('leidian3_hi', String(this.highScore));
   },
   onPlayerDeath() {
     Audio.gameOver();
     this.banner = '游戏结束';
     this.transition = 0;
     this.state = 'gameover';
-    if (this.score > this.highScore) {
-      this.highScore = this.score;
-      localStorage.setItem('leidian3_hi', String(this.highScore));
-    }
+    this._saveHighScore();
   },
 
   // ---------- 控制 ----------
   startGame() {
     Audio.resume();
+    this.runId++;
     this.bullets = []; this.enemyBullets = []; this.enemies = []; this.particles = []; this.powerups = [];
     this.score = 0; this.level = 1; this.time = 0; this.screenShake = 0;
     this.player = new Player();
@@ -207,14 +216,19 @@ const Game = {
     // 敌机子弹 vs 玩家
     for (const b of this.enemyBullets) {
       if (b.dead) continue;
-      if (Utils.circleHit(b, player)) { b.dead = true; player.hit(); }
+      if (Utils.circleHit(b, player)) { b.dead = true; player.hit(b.damage); }
+      if (player.dead) return;
     }
     // 敌机机体 vs 玩家
     for (const e of this.enemies) {
       if (e.dead) continue;
       if (Utils.circleHit(e, player)) { e.hit(999); player.hit(); }
+      if (player.dead) return;
     }
-    if (this.boss && !this.boss.dead && Utils.circleHit(this.boss, player)) player.hit();
+    if (this.boss && !this.boss.dead && Utils.circleHit(this.boss, player)) {
+      player.hit();
+      if (player.dead) return;
+    }
 
     // 道具 vs 玩家
     for (const p of this.powerups) {

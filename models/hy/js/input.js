@@ -18,15 +18,16 @@ const Input = {
     window.addEventListener('blur', () => { this.keys = {}; });
   },
   _norm(e) {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const map = {
       'ArrowUp': 'up', 'ArrowDown': 'down', 'ArrowLeft': 'left', 'ArrowRight': 'right',
       'w': 'up', 's': 'down', 'a': 'left', 'd': 'right',
       ' ': 'fire', 'Shift': 'bomb',
-      'p': 'pause', 'P': 'pause',
+      'p': 'pause',
       'Enter': 'enter',
-      'm': 'mute', 'M': 'mute'
+      'm': 'mute'
     };
-    return map[e.key] || null;
+    return map[key] || null;
   },
   down(k) { return !!this.keys[k]; },
   // 单次按下（消费式）

@@ -141,7 +141,7 @@ class Player {
     Game.addExplosion(this.x, this.y, 220, '#b06bff', 60);
     Game.screenShake = 0.6;
   }
-  hit() {
+  hit(dmg = 1) {
     if (this.invuln > 0 || this.dead) return;
     if (this.shieldTime > 0) {
       this.shieldTime = 0; this.invuln = 1.0;
@@ -149,7 +149,7 @@ class Player {
       Audio.hit();
       return;
     }
-    this.lives--;
+    this.lives -= dmg;
     this.weapon = Math.max(1, this.weapon - 1);
     this.invuln = 2.0;
     Audio.playerHit();
