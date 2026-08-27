@@ -276,3 +276,103 @@ test('canvas scaling does not reserve a hidden hint or its gap', () => {
 
   assert.equal(context.calculateCanvasScale(stage, hint), 1);
 });
+
+test('mute input is handled outside the playing state', () => {
+  let toggles = 0;
+  const context = {
+    Audio: { toggle() { toggles++; } },
+    Bullet: class {}, Boss: class {}, Enemy: class {}, Particle: class {}, Player: class {}, PowerUp: class {}, Spawner: class {},
+    Input: {
+      endFrame() {},
+      justPressed: key => key === 'mute',
+    },
+    Utils: {}, localStorage: {}, requestAnimationFrame() {}, setTimeout() {},
+  };
+  evaluate('js/game.js', context, 'this.Game = Game;');
+  context.Game.draw = () => {};
+
+  context.Game.state = 'menu';
+  context.Game.loop(16);
+  context.Game.state = 'paused';
+  context.Game.loop(32);
+
+  assert.equal(toggles, 2);
+});
+
+test('a slow frame is substepped so crossing projectiles still collide', () => {
+  const context = {
+    Audio: { hit() {} },
+    Bullet: class {}, Boss: class {}, Enemy: class {}, Particle: class {}, Player: class {}, PowerUp: class {}, Spawner: class {},
+    Input: {
+      down: () => false,
+      endFrame() {},
+      justPressed: () => false,
+    },
+    Utils: {
+      circleHit: (a, b) => Math.hypot(a.x - b.x, a.y - b.y) <= a.r + b.r,
+    },
+    localStorage: {}, requestAnimationFrame() {}, setTimeout() {},
+  };
+  evaluate('js/game.js', context, 'this.Game = Game;');
+  const bullet = {
+    x: 100, y: 98, r: 2, damage: 1, dead: false,
+    update(dt) { this.y -= 500 * dt; },
+  };
+  const enemy = {
+    x: 100, y: 80, r: 15, dead: false,
+    update(dt) { this.y += 250 * dt; },
+    hit() { this.dead = true; },
+  };
+  context.Game._last = 1;
+  context.Game.state = 'playing';
+  context.Game.draw = () => {};
+  context.Game.player = {
+    x: 400, y: 600, r: 10, dead: false,
+    bomb() {}, update() {},
+  };
+  context.Game.spawner = { done: false, update() {} };
+  context.Game.bullets = [bullet];
+  context.Game.enemyBullets = [];
+  context.Game.enemies = [enemy];
+  context.Game.powerups = [];
+  context.Game.particles = [];
+  context.Game.boss = null;
+
+  context.Game.loop(51);
+
+  assert.equal(enemy.dead, true);
+  assert.equal(bullet.dead, true);
+});
+
+test('blocked high-score storage falls back to memory without stopping the game', () => {
+  let animationScheduled = false;
+  const renderedText = [];
+  const context = {
+    Audio: { init() {} },
+    Bullet: class {}, Boss: class {}, Enemy: class {}, Particle: class {}, Player: class {}, PowerUp: class {}, Spawner: class {},
+    Input: { init() {}, justPressed: () => false },
+    Utils: { rand: min => min },
+    localStorage: {
+      getItem() { throw new Error('storage blocked'); },
+      setItem() { throw new Error('storage blocked'); },
+    },
+    requestAnimationFrame() { animationScheduled = true; },
+    setTimeout() {},
+  };
+  evaluate('js/game.js', context, 'this.Game = Game;');
+
+  assert.doesNotThrow(() => context.Game.init({ getContext: () => ({}) }));
+  assert.equal(context.Game.highScore, 0);
+  assert.equal(animationScheduled, true);
+  context.Game.score = 800;
+  assert.doesNotThrow(() => context.Game._saveHighScore());
+  assert.equal(context.Game.highScore, 800);
+  assert.equal(context.Game.highScoreStorageAvailable, false);
+  context.Game.ctx = {
+    fillRect() {},
+    fillText: text => renderedText.push(text),
+  };
+  context.Game.state = 'menu';
+  context.Game._drawOverlay(context.Game.ctx);
+  assert.ok(renderedText.includes('最高分存储不可用 · 仅本次有效'));
+});

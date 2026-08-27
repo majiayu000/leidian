@@ -2,18 +2,25 @@
 const Game = {
   W: 480, H: 720,
   MAX_LEVEL: 5,
+  MAX_SIMULATION_STEP: 1 / 60,
   canvas: null, ctx: null,
   state: 'menu', // menu | playing | paused | levelclear | gameover | victory
   player: null, boss: null, spawner: null,
   bullets: [], enemyBullets: [], enemies: [], particles: [], powerups: [],
   stars: [],
-  score: 0, highScore: 0, level: 1, time: 0, screenShake: 0,
+  score: 0, highScore: 0, highScoreStorageAvailable: true, level: 1, time: 0, screenShake: 0,
   bossSpawned: false, transition: 0, banner: '', runId: 0,
 
   init(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.highScore = parseInt(localStorage.getItem('leidian3_hi') || '0', 10) || 0;
+    this.highScoreStorageAvailable = true;
+    try {
+      this.highScore = parseInt(localStorage.getItem('leidian3_hi') || '0', 10) || 0;
+    } catch {
+      this.highScore = 0;
+      this.highScoreStorageAvailable = false;
+    }
     this._initStars();
     Input.init();
     Audio.init();
@@ -97,7 +104,12 @@ const Game = {
   _saveHighScore() {
     if (this.score <= this.highScore) return;
     this.highScore = this.score;
-    localStorage.setItem('leidian3_hi', String(this.highScore));
+    if (!this.highScoreStorageAvailable) return;
+    try {
+      localStorage.setItem('leidian3_hi', String(this.highScore));
+    } catch {
+      this.highScoreStorageAvailable = false;
+    }
   },
   onPlayerDeath() {
     Audio.gameOver();
@@ -133,7 +145,15 @@ const Game = {
     this._last = now;
     this.time += dt;
 
-    if (this.state === 'playing') this.update(dt);
+    if (Input.justPressed('mute')) Audio.toggle();
+    if (this.state === 'playing') {
+      let remaining = dt;
+      while (remaining > 0 && this.state === 'playing') {
+        const step = Math.min(this.MAX_SIMULATION_STEP, remaining);
+        this.update(step);
+        remaining -= step;
+      }
+    }
     else if (this.state === 'levelclear' || this.state === 'victory' || this.state === 'gameover') {
       // 仍更新粒子/星空做背景动效
       this._updateAmbient(dt);
@@ -164,7 +184,6 @@ const Game = {
   update(dt) {
     // 暂停
     if (Input.justPressed('pause')) { this.state = 'paused'; return; }
-    if (Input.justPressed('mute')) Audio.toggle();
     if (Input.justPressed('bomb')) this.player.bomb();
 
     this._updateStars(dt);
@@ -350,6 +369,7 @@ const Game = {
         ['P  暂停    M  静音', 0, '#dff3ff', 16],
         ['', 0],
         ['道具： P武器 B炸弹 S护盾 L生命 $分数', 0, '#9dff5b', 13],
+        this._highScoreStorageNotice(),
         ['', 0],
         ['按 Enter 开始游戏', 0, '#ffd23f', 20]
       ]);
@@ -365,6 +385,7 @@ const Game = {
         ['', 0],
         ['本局得分  ' + this.score, 0, '#dff3ff', 18],
         ['历史最高  ' + this.highScore, 0, '#dff3ff', 18],
+        this._highScoreStorageNotice(),
         ['', 0],
         ['按 Enter 重新开始', 0, '#ffd23f', 20]
       ]);
@@ -374,6 +395,7 @@ const Game = {
         ['', 0],
         ['最终得分  ' + this.score, 0, '#dff3ff', 18],
         ['历史最高  ' + this.highScore, 0, '#dff3ff', 18],
+        this._highScoreStorageNotice(),
         ['', 0],
         ['按 Enter 再来一局', 0, '#ffd23f', 20]
       ]);
@@ -384,6 +406,12 @@ const Game = {
       this.startGame();
     }
     if (this.state === 'paused' && Input.justPressed('pause')) this.state = 'playing';
+  },
+
+  _highScoreStorageNotice() {
+    return this.highScoreStorageAvailable
+      ? ['', 0]
+      : ['最高分存储不可用 · 仅本次有效', 0, '#ffcc00', 13];
   },
 
   _panel(ctx, lines) {
