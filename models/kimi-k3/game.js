@@ -68,7 +68,12 @@ window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 let state = 'menu';        // menu | playing | gameover
 let paused = false;
 let score = 0;
-let best = parseInt(localStorage.getItem('raiden_best') || '0', 10) || 0;
+let best = 0;
+try {
+  best = parseInt(localStorage.getItem('raiden_best') || '0', 10) || 0;
+} catch {
+  best = 0;
+}
 let lives = 3;
 let weapon = 1;            // 武器等级 1~5
 let bombs = 3;
@@ -108,7 +113,11 @@ function gameOver() {
   state = 'gameover';
   if (score > best) {
     best = score;
-    localStorage.setItem('raiden_best', String(best));
+    try {
+      localStorage.setItem('raiden_best', String(best));
+    } catch {
+      /* opaque-origin sandbox: keep in-memory high score only */
+    }
   }
 }
 

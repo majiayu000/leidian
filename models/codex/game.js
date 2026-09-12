@@ -14,7 +14,12 @@ const ui = {
 const TAU = Math.PI * 2;
 const keys = new Set();
 let width = 0, height = 0, dpr = 1, lastTime = 0, state = "menu";
-let score = 0, highScore = Number(localStorage.getItem("thunder-high-score") || 0);
+let score = 0, highScore = 0;
+try {
+  highScore = Number(localStorage.getItem("thunder-high-score") || 0);
+} catch {
+  highScore = 0;
+}
 let wave = 1, waveTimer = 0, spawnTimer = 0, shake = 0, flash = 0, touchActive = false;
 let player = null;
 let bullets = [];
@@ -117,7 +122,14 @@ function destroyEnemy(enemy) {
 function endGame() {
   state = "gameover";
   const isRecord = score > highScore;
-  if (isRecord) { highScore = score; localStorage.setItem("thunder-high-score", String(score)); }
+  if (isRecord) {
+    highScore = score;
+    try {
+      localStorage.setItem("thunder-high-score", String(score));
+    } catch {
+      /* opaque-origin sandbox: keep in-memory high score only */
+    }
+  }
   ui.finalScore.textContent = String(score).padStart(6, "0"); ui.newRecord.hidden = !isRecord;
   ui.gameOver.classList.add("active"); updateUI();
 }
