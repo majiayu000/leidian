@@ -18,7 +18,11 @@ jobs:
           node-version: 22
       - name: Run HY regression tests
         run: node --test models/hy/tests/*.test.js
+      - name: Run Codex/Kimi storage regression tests
+        run: node --test models/storage-regressions.test.js
       - name: Check HY JavaScript syntax
         run: find models/hy/js -name '*.js' -exec node --check {} +
+      - name: Check Codex and Kimi JavaScript syntax
+        run: node --check models/codex/game.js && node --check models/kimi-k3/game.js
       - name: Validate HY metadata
         run: node -e "JSON.parse(require('node:fs').readFileSync('models/hy/meta.json', 'utf8'))"
