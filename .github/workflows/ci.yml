@@ -22,3 +22,5 @@ jobs:
         run: find models/hy/js -name '*.js' -exec node --check {} +
       - name: Validate HY metadata
         run: node -e "JSON.parse(require('node:fs').readFileSync('models/hy/meta.json', 'utf8'))"
+      - name: Run comparison regression tests
+        run: node --test models/comparison-regressions.test.js
