@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run HY regression tests
-        run: node --test models/hy/tests/*.test.js
+      - name: Run model regression tests
+        run: node --test models/*.test.js models/*/tests/*.test.js
       - name: Check HY JavaScript syntax
         run: find models/hy/js -name '*.js' -exec node --check {} +
       - name: Validate HY metadata
