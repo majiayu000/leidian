@@ -20,5 +20,7 @@ jobs:
         run: node --test models/hy/tests/*.test.js
       - name: Check HY JavaScript syntax
         run: find models/hy/js -name '*.js' -exec node --check {} +
+      - name: Run score regression tests
+        run: node --test models/score-regressions.test.js
       - name: Validate HY metadata
         run: node -e "JSON.parse(require('node:fs').readFileSync('models/hy/meta.json', 'utf8'))"
