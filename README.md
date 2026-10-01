@@ -20,6 +20,21 @@ npx serve .
 
 GitHub Pages 也直接可用：启用后访问 `https://<user>.github.io/leidian/`。
 
+## 怎样并排比较模型产物
+
+1. 按上面的方式启动 HTTP 服务，打开对比入口，先在左侧选一个模型做「单屏预览」。
+2. 点击「并排对比」，再选另一个不同模型；原模型保留在左侧，第二个出现在右侧。
+3. 点击要玩的游戏画面，让对应 iframe 获得键盘焦点。各产物的按键和难度不同，先看各自开始画面的说明，再用同一浏览器、窗口大小和相近试玩时长记录操控、敌机、道具与画面体验。
+4. 按 [评分标准](scoring.md) 分别记录可玩性、视觉和代码质量；不要把只试玩过的画面当作代码审查结果。
+
+当前注册的产物可单独阅读或运行：[Kimi K3](models/kimi-k3/index.html)、[Qwen](models/qwen/index.html)、[Codex](models/codex/index.html)、[HY](models/hy/index.html)。每个目录的 `meta.json` 记录生成日期、Prompt 版本、生成方式与本地评分，例如 [Codex 元信息](models/codex/meta.json)。
+
+### 评分面板能说明什么
+
+「待评」表示该维度没有填评分，不表示零能力。面板总分按 40% / 30% / 30% 汇总，缺失维度在计算中按零处理；部分评分的总分不能与完整评分直接比较。不同生成日期和迭代方式也会影响产物，因此这些分数是本项目评分表下的观察，不是受控的通用模型能力排名。
+
+这里的「雷电」是纵版射击学习项目的题材称呼，与 [Raiden IV 商业产品](https://store.steampowered.com/app/2002850/Raiden_IV_x_MIKADO_remix/) 区分。若只想研究单款零依赖的 Canvas 射击游戏，可看独立仓库 [雷霆突击](https://github.com/majiayu000/leidian-codex)。
+
 ## 目录结构
 
 ```
@@ -70,3 +85,7 @@ leidian/
 | 代码 | 30% | 结构、可读性、错误处理、可维护性 |
 
 详见 [scoring.md](scoring.md)。
+
+## 问题反馈与更新
+
+遇到问题时，请在 [Issues](https://github.com/majiayu000/leidian/issues) 写明浏览器或编辑器版本、所用提交、复现步骤和报错文字。当前源码变化见 [提交记录](https://github.com/majiayu000/leidian/commits/main/)。
