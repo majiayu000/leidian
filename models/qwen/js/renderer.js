@@ -1,9 +1,10 @@
+'use strict';
+
 /**
  * 渲染器 — Canvas 2D 绘制所有游戏元素
  */
-import { CANVAS_W, CANVAS_H } from './entities.js';
 
-export class Renderer {
+class Renderer {
   constructor(ctx) {
     this.ctx = ctx;
     this.starfield = this._initStars();

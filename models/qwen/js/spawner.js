@@ -1,7 +1,8 @@
+'use strict';
+
 /**
  * 波次系统 — 敌机生成和关卡推进
  */
-import { Enemy, CANVAS_W } from './entities.js';
 
 // 波次定义：每波包含若干生成组
 const WAVES = [
@@ -35,7 +36,7 @@ const WAVES = [
   ]},
 ];
 
-export class Spawner {
+class Spawner {
   constructor() {
     this.wave = 0;
     this.frame = 0;
