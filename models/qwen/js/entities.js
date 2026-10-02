@@ -1,12 +1,14 @@
+'use strict';
+
 /**
  * 游戏实体 — 玩家、敌机、子弹、道具、粒子
  */
 
-export const CANVAS_W = 480;
-export const CANVAS_H = 720;
+const CANVAS_W = 480;
+const CANVAS_H = 720;
 
 // ─── 玩家 ───────────────────────────────────────────────
-export class Player {
+class Player {
   constructor() {
     this.x = CANVAS_W / 2;
     this.y = CANVAS_H - 80;
@@ -108,7 +110,7 @@ export class Player {
 }
 
 // ─── 子弹 ───────────────────────────────────────────────
-export class Bullet {
+class Bullet {
   constructor(x, y, vx, vy, owner, radius = 3) {
     this.x = x;
     this.y = y;
@@ -130,7 +132,7 @@ export class Bullet {
 }
 
 // ─── 敌机类型定义 ─────────────────────────────────────────
-export const ENEMY_TYPES = {
+const ENEMY_TYPES = {
   scout: {
     w: 24, h: 24, hp: 1, speed: 2.5, score: 100,
     fireRate: 0, color: '#ff6644',
@@ -149,7 +151,7 @@ export const ENEMY_TYPES = {
   },
 };
 
-export class Enemy {
+class Enemy {
   constructor(type, x, pattern = 'straight') {
     const def = ENEMY_TYPES[type];
     this.type = type;
@@ -243,9 +245,9 @@ export class Enemy {
 }
 
 // ─── 道具 ───────────────────────────────────────────────
-export const POWERUP_TYPES = ['power', 'bomb', 'life'];
+const POWERUP_TYPES = ['power', 'bomb', 'life'];
 
-export class PowerUp {
+class PowerUp {
   constructor(x, y, type) {
     this.x = x;
     this.y = y;
@@ -265,7 +267,7 @@ export class PowerUp {
 }
 
 // ─── 粒子（爆炸效果）───────────────────────────────────────
-export class Particle {
+class Particle {
   constructor(x, y, color) {
     this.x = x;
     this.y = y;
@@ -290,7 +292,7 @@ export class Particle {
   }
 }
 
-export function spawnExplosion(x, y, color, count = 12) {
+function spawnExplosion(x, y, color, count = 12) {
   const particles = [];
   for (let i = 0; i < count; i++) {
     particles.push(new Particle(x, y, color));
@@ -299,7 +301,7 @@ export function spawnExplosion(x, y, color, count = 12) {
 }
 
 // ─── 碰撞检测 ─────────────────────────────────────────────
-export function circleRect(cx, cy, cr, rx, ry, rw, rh) {
+function circleRect(cx, cy, cr, rx, ry, rw, rh) {
   const closestX = Math.max(rx - rw / 2, Math.min(cx, rx + rw / 2));
   const closestY = Math.max(ry - rh / 2, Math.min(cy, ry + rh / 2));
   const dx = cx - closestX;
@@ -307,7 +309,7 @@ export function circleRect(cx, cy, cr, rx, ry, rw, rh) {
   return dx * dx + dy * dy < cr * cr;
 }
 
-export function circleCircle(x1, y1, r1, x2, y2, r2) {
+function circleCircle(x1, y1, r1, x2, y2, r2) {
   const dx = x1 - x2;
   const dy = y1 - y2;
   const dist = r1 + r2;

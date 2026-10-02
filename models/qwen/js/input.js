@@ -1,7 +1,9 @@
+'use strict';
+
 /**
  * 输入管理 — 键盘 + 鼠标
  */
-export class Input {
+class Input {
   constructor(canvas) {
     this.keys = new Set();
     this.mouseX = null;
