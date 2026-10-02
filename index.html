@@ -319,13 +319,15 @@ function renderScores() {
   for (const id of show) {
     const m = MODELS.find(x => x.id === id);
     const s = scores[id] || {};
-    const total = (s.playability || 0) * 0.4 + (s.visual || 0) * 0.3 + (s.code_quality || 0) * 0.3;
+    const total = dims.every(d => Number.isFinite(s[d.key]))
+      ? s.playability * 0.4 + s.visual * 0.3 + s.code_quality * 0.3
+      : null;
     html += `<div class="score-card"><div class="model-name">${m.name}</div>`;
     for (const d of dims) {
-      const v = s[d.key];
+      const v = Number.isFinite(s[d.key]) ? s[d.key] : null;
       html += `<div class="score-row"><span class="label">${d.label}</span><span class="value ${v == null ? 'na' : ''}">${v != null ? v + ' / 10' : '待评'}</span></div>`;
     }
-    html += `<div class="score-total"><span>综合</span><span class="value">${total > 0 ? total.toFixed(1) : '—'}</span></div>`;
+    html += `<div class="score-total"><span>综合</span><span class="value">${total != null ? total.toFixed(1) : '—'}</span></div>`;
     html += '</div>';
   }
   panel.innerHTML = html;
