@@ -199,11 +199,11 @@ header p { font-size: 13px; color: #5a6a80; margin-top: 6px; }
     <div class="game-area" id="game-area">
       <div class="game-frame" id="frame-a">
         <div class="frame-header" id="header-a">选择一个模型</div>
-        <iframe id="iframe-a" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe id="iframe-a" sandbox="allow-scripts"></iframe>
       </div>
       <div class="game-frame hidden" id="frame-b">
         <div class="frame-header" id="header-b">对比模型</div>
-        <iframe id="iframe-b" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe id="iframe-b" sandbox="allow-scripts"></iframe>
       </div>
     </div>
   </main>
@@ -271,7 +271,11 @@ function selectModel(id) {
       document.getElementById('header-b').textContent = MODELS.find(m => m.id === id).name;
     }
   }
-  // 高亮
+  renderSelection();
+}
+
+// 刷新模型高亮和评分
+function renderSelection() {
   document.querySelectorAll('.model-item').forEach(el => {
     el.classList.toggle('active', el.dataset.id === currentA || el.dataset.id === currentB);
   });
@@ -282,15 +286,19 @@ function selectModel(id) {
 document.getElementById('btn-single').addEventListener('click', () => {
   compareMode = false;
   currentB = null;
+  document.getElementById('iframe-b').removeAttribute('src');
+  document.getElementById('header-b').textContent = '对比模型';
   document.getElementById('btn-single').classList.add('active');
   document.getElementById('btn-compare').classList.remove('active');
   document.getElementById('frame-b').classList.add('hidden');
+  renderSelection();
 });
 document.getElementById('btn-compare').addEventListener('click', () => {
   compareMode = true;
   document.getElementById('btn-compare').classList.add('active');
   document.getElementById('btn-single').classList.remove('active');
   document.getElementById('frame-b').classList.remove('hidden');
+  renderSelection();
 });
 
 // 渲染评分

@@ -1,14 +1,8 @@
+'use strict';
+
 /**
  * 主入口 — 游戏循环、状态机、碰撞处理
  */
-import { Input } from './input.js';
-import { Audio } from './audio.js';
-import { Renderer } from './renderer.js';
-import { Spawner } from './spawner.js';
-import {
-  Player, Bullet, PowerUp, CANVAS_W, CANVAS_H,
-  spawnExplosion, circleRect, circleCircle,
-} from './entities.js';
 
 const canvas = document.getElementById('game-canvas');
 canvas.width = CANVAS_W;

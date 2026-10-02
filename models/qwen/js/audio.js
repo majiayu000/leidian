@@ -1,7 +1,9 @@
+'use strict';
+
 /**
  * 音效管理 — Web Audio API 合成音效，无外部资源
  */
-export class Audio {
+class Audio {
   constructor() {
     this.ctx = null;
     this.enabled = true;
